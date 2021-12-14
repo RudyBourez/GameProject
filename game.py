@@ -4,6 +4,10 @@ from termcolor import colored
 import time
 import os
 import csv
+import pygame
+
+pygame.init()
+
 
 clear = lambda: os.system('cls') # clear the console
 
@@ -60,31 +64,23 @@ class Game:
         time.sleep(1)
         path = ""
         print("4 chemins s'offrent à vous, choisissez l'un d'entre eux ou abandonner lâchement pour le moment.")
-        while path not in ["1","a", "b", "c", "d"]:
+        while path not in ["1", "a", "b", "c", "d"]:
             print("1: boutique | a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
             path = input("Quel est votre choix 1 | A | B | C | D ?      ")
             time.sleep(1)
             if path == "1":
                 self.buy(player)
                 path = ""
-            elif path.lower() == "a":
+            elif path.lower() in ["a","b","c"]:
                 clear()
-                difficulty = 0
+                if path.lower() == "a":
+                    difficulty = 0
+                elif path.lower() == "b":
+                    difficulty = 0.1
+                else :
+                    difficulty = 0.2
                 self.summon_monster(difficulty, player)
-                path =""
-
-            elif path.lower() == "b":
-                clear()
-                difficulty = 0.1
-                self.summon_monster(difficulty, player)
-                path =""
-
-            elif path.lower() == "c":
-                clear()
-                difficulty = 0.2
-                self.summon_monster(difficulty, player)
-                path =""
-
+                path = ""
             elif path.lower() == "d":
                 self.quit(player)
             else:
@@ -109,16 +105,17 @@ class Game:
         """Manages the fight between the player and a monster"""
         while player.hp > 0 and monster.hp > 0:
             choice = input("1: Attaque | 2: Défendre | 3: Potion\n")
+            time.sleep(1)
             if choice == "1":
-                time.sleep(1)
                 self.score, monster.hp = player.attack(monster,self.score)
             elif choice == "2":
-                time.sleep(1)
                 clear()
                 player.defense = player.defend()
             elif choice == "3":
                 if player.potion > 0 :
-                    time.sleep(1)
+                    pygame.mixer.music.load("Assets/drink1.wav")
+                    pygame.mixer.music.play()
+                    time.sleep(2)
                     player.hp, player.potion = player.drink_potion()
                 else:
                     print("Vous n'avez plus de potions")
@@ -128,6 +125,9 @@ class Game:
         if player.hp <= 0 :
             self.running = player.death()
         else:
+            pygame.mixer.music.load("Assets/fighting.mp3")
+            pygame.mixer.music.play()
+            time.sleep(1)
             if player.experience > player.exp_dict[player.level]:
                 player.level_up()
             del monster
