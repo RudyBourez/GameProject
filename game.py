@@ -135,25 +135,35 @@ class Game:
         """Allow to quit the game and save the progression"""
         self.running = False
         print(f"Vous quittez le donjon! Votre score est de {self.score} et votre étage de {self.floor}")
-        with open('save.csv','w', newline='\n') as csvfile:
-            save_writer = csv.writer(csvfile, delimiter ='|')
-            save_writer.writerow([player.name, player.hp, player.hp_max, player.strength, player.potion, player.power, player.experience, player.level, self.score, self.floor ])
+        try:
+            with open('save.csv','w', newline='\n') as csvfile:
+                save_writer = csv.writer(csvfile, delimiter ='|')
+                save_writer.writerow([player.name, player.hp, player.hp_max, player.strength, player.potion, player.power, player.experience, player.level, self.score, self.floor ])
+        except FileNotFoundError:
+            raise(FileNotFoundError("Le fichier save.csv n'existe pas"))
+        except:
+            raise ValueError("Erreur dans le fichier save.csv")
 
     def load(self):
         print(f"Chargement de la partie...")
-        with open('save.csv','r', newline='\n') as csvfile:
-            saved_games = list(csv.reader(csvfile, delimiter = '|'))
-            for saved_game in saved_games:
-                name = str(saved_game[0])
-                hp = int(saved_game[1])
-                hp_max = int(saved_game[2])
-                strength = int(saved_game[3])
-                potion = int(saved_game[4])
-                power = int(saved_game[5])
-                experience = int(saved_game[6])
-                level = int(saved_game[7])
-                score = int(saved_game[8])
-                floor = int(saved_game[9])
+        try:
+            with open('save.csv','r', newline='\n') as csvfile:
+                saved_games = list(csv.reader(csvfile, delimiter = '|'))
+                for saved_game in saved_games:
+                    name = str(saved_game[0])
+                    hp = int(saved_game[1])
+                    hp_max = int(saved_game[2])
+                    strength = int(saved_game[3])
+                    potion = int(saved_game[4])
+                    power = int(saved_game[5])
+                    experience = int(saved_game[6])
+                    level = int(saved_game[7])
+                    score = int(saved_game[8])
+                    floor = int(saved_game[9])
+        except FileNotFoundError:
+            raise(FileNotFoundError("Le fichier save.csv n'existe pas"))
+        except:
+            raise ValueError("Erreur dans le fichier save.csv")
 
         player = Player(name,hp,hp_max,strength)
         player.potion = potion

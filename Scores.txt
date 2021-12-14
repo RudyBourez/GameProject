@@ -8,3 +8,7 @@ Rudy =====> score = 26 | floor = 3
 Rudy =====> score = 26 | floor = 3
 Rudy =====> score = 26 | floor = 3
 Rudy =====> score = 26 | floor = 3
+Test =====> score = 11 | floor = 2
+Test =====> score = 23 | floor = 3
+Test =====> score = 23 | floor = 3
+Truc =====> score = 11 | floor = 2
