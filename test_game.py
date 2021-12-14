@@ -35,3 +35,11 @@ class TestGame:
         assert game_test.floor == 3
         assert game_test.running == False
         assert game_test.score == 26
+
+    def test_load(self, monkeypatch):
+        response = iter(["t","l", "c", "a", "3", "2", "1", "1", "1", "1", "1","1","1", "d", "1"])
+        monkeypatch.setattr('builtins.input', lambda x: next(response))
+        game_test = Game()
+        assert game_test.floor == 2
+        assert game_test.running == False
+        assert game_test.score == 13

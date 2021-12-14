@@ -135,14 +135,9 @@ class Game:
         """Allow to quit the game and save the progression"""
         self.running = False
         print(f"Vous quittez le donjon! Votre score est de {self.score} et votre étage de {self.floor}")
-        try:
-            with open('save.csv','w', newline='\n') as csvfile:
-                save_writer = csv.writer(csvfile, delimiter ='|')
-                save_writer.writerow([player.name, player.hp, player.hp_max, player.strength, player.potion, player.power, player.experience, player.level, self.score, self.floor ])
-        except FileNotFoundError:
-            raise(FileNotFoundError("Le fichier save.csv n'existe pas"))
-        except:
-            raise ValueError("Erreur dans le fichier save.csv")
+        with open('save.csv','w', newline='\n') as csvfile:
+            save_writer = csv.writer(csvfile, delimiter ='|')
+            save_writer.writerow([player.name, player.hp, player.hp_max, player.strength, player.potion, player.power, player.experience, player.level, self.score, self.floor ])
 
     def load(self):
         print(f"Chargement de la partie...")
@@ -171,8 +166,7 @@ class Game:
 
                     self.run(player)
         except FileNotFoundError:
-            print("Le fichier save.csv n'existe pas")
-            
+            print("Le fichier save.csv n'existe pas")     
         except:
             raise ValueError("Erreur dans le fichier save.csv")
 

@@ -24,6 +24,9 @@ class Drop:
                         self.attack = self.strength + dict[keys[i]]
                         print(f'Vous avez obtenu {keys[i]} et votre attaque passe à {self.attack}')
                     else:
-                        print('Vous obtenez {keys[i]} mais vous possédez déjà un meilleur équipement')
+                        print(f'Vous obtenez {keys[i]} mais vous possédez déjà un meilleur équipement')
                 break
         return self.attack, self.potion
+
+drop = Drop({"une hâche" : 80, "une épee": 20}, 5, 5, 3)
+print(drop.attack)
