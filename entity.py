@@ -41,7 +41,7 @@ class Monster(Entity):
         self.strength = round(self.strength * (((floor/10)+difficulty)+1))
         self.hp = round(self.hp * (((floor/10)+difficulty)+1))
         self.hp_max = self.hp
-        self.gold = round(self.gold * ((floor/10)+difficulty))
+        self.gold = round(self.gold * ((floor/10)+difficulty+1))
         self.points = round(self.points * (((floor/10)+difficulty)+1))
         self.exp_points += floor * 5
         print(colored(f"           {self.name}","green"), f"s'approche de vous ! Il posséde {self.hp} points de vie et une force de {self.strength}.")
@@ -96,7 +96,7 @@ class Boss(Entity):
         self.hp_max = self.hp
         self.points = round(self.points * (((floor/10)+difficulty)+1))
         self.exp_points *= floor/5
-        self.gold = round(self.gold * ((floor/10)+difficulty))
+        self.gold = round(self.gold * ((floor/10)+difficulty)+1)
         print(f"            {self.name} vient d'apparaître ! Un boss avec {self.hp} points de vie et avec une force de {self.strength}.")
         return self.points, self.droprate, self.strength, self.hp, self.exp_points
 
@@ -149,6 +149,7 @@ class Boss(Entity):
 class Player(Entity):
     
     potion : ClassVar[int] = 3
+    mana_potion : ClassVar[int] = 1
     defense : ClassVar[int] = 0
     power : ClassVar[int] = 5
     experience : ClassVar[int] = 0

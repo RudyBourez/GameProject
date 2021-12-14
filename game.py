@@ -59,12 +59,15 @@ class Game:
         print(f"                           Vous arrivez à l'étage {self.floor} et votre score est de {self.score}\n")
         time.sleep(1)
         path = ""
-        print("3 chemins s'offrent à vous, choisissez l'un d'entre eux ou abandonner lâchement pour le moment.")
-        while path not in ["a", "b", "c", "d"]:
-            print("a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
-            path = input("Quel est votre choix A | B | C | D ?      ")
+        print("4 chemins s'offrent à vous, choisissez l'un d'entre eux ou abandonner lâchement pour le moment.")
+        while path not in ["1","a", "b", "c", "d"]:
+            print("1: boutique | a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
+            path = input("Quel est votre choix 1 | A | B | C | D ?      ")
             time.sleep(1)
-            if path.lower() == "a":
+            if path == "1":
+                self.buy(player)
+                path = ""
+            elif path.lower() == "a":
                 clear()
                 difficulty = 0
                 self.summon_monster(difficulty, player)
@@ -138,6 +141,39 @@ class Game:
         with open('save.csv','w', newline='\n') as csvfile:
             save_writer = csv.writer(csvfile, delimiter ='|')
             save_writer.writerow([player.name, player.hp, player.hp_max, player.strength, player.potion, player.power, player.experience, player.level, self.score, self.floor ])
+
+    def buy(self,player):
+        print("Healing_potion(100gold) : 1 | Mana_potion(300gold) : 2 | Exit : 3")
+        print(f"Vous avez {player.gold} gold")
+        buying = True
+        while buying:
+            item = input("Que voulez-vous acheter?  ")
+            if item == "1":
+                number = input("Combien en voulez-vous?   ")
+                try:
+                    if player.gold >= int(number) * 100 and int(number) >= 0:
+                        player.potion += int(number)
+                        player.gold -= int(number) * 100
+                        print(f"{player.gold}")
+                        print(f"Vous avez maintenant {player.potion} potions")
+                    else :
+                        print("Vous n'avez pas assez de monnaie")
+                except:
+                    print("Veuillez indiquer un nombre correct")
+            elif item == "2":
+                number = input("Combien en voulez-vous?   ")
+                try:
+                    if player.gold >= int(number) * 300 and int(number) >= 0:
+                        player.mana_potion += int(number)
+                        player.gold -= int(number) * 300
+                        print(f"{player.gold}")
+                        print(f"Vous avez maintenant {player.mana_potion} potions de mana")
+                    else :
+                        print("Vous n'avez pas assez de monnaie")
+                except:
+                    print("Veuillez indiquer un nombre correct")
+            elif item == "3":
+                buying = False
 
     def load(self):
         print(f"Chargement de la partie...")
