@@ -34,8 +34,8 @@ class Game:
                 clear()
                 self.run(player)
             elif defi.lower() == "l":
-                player = self.load()
-                self.run(player)
+                self.load()
+                defi = input("-----------------------------------------\nPréférez-vous démarrer une partie ? (Y/N) ou charger votre dernière partie ? (L)")
             elif defi.lower() == "n":
                 self.running = False
                 print("Votre décision est lourde de conséquences. Claire restera dans son donjon pour le restant de ses jours...\n Ouste péant ! Reviens quand tu seras un peu plus valeureux !")
@@ -68,19 +68,19 @@ class Game:
                 clear()
                 difficulty = 0
                 self.summon_monster(difficulty, player)
-                path = ""
+                path =""
 
             elif path.lower() == "b":
                 clear()
                 difficulty = 0.1
                 self.summon_monster(difficulty, player)
-                path = ""
+                path =""
 
             elif path.lower() == "c":
                 clear()
                 difficulty = 0.2
                 self.summon_monster(difficulty, player)
-                path = ""
+                path =""
 
             elif path.lower() == "d":
                 self.quit(player)
@@ -160,17 +160,19 @@ class Game:
                     level = int(saved_game[7])
                     score = int(saved_game[8])
                     floor = int(saved_game[9])
+                    
+                    player = Player(name,hp,hp_max,strength)
+                    player.potion = potion
+                    player.power = power
+                    player.experience = experience
+                    player.level = level
+                    self.score = score
+                    self.floor = floor
+
+                    self.run(player)
         except FileNotFoundError:
-            raise(FileNotFoundError("Le fichier save.csv n'existe pas"))
+            print("Le fichier save.csv n'existe pas")
+            
         except:
             raise ValueError("Erreur dans le fichier save.csv")
 
-        player = Player(name,hp,hp_max,strength)
-        player.potion = potion
-        player.power = power
-        player.experience = experience
-        player.level = level
-        self.score = score
-        self.floor = floor
-                
-        return player
