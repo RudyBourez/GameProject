@@ -203,4 +203,68 @@ class Player(Entity):
         print(f'-------Vous avez maintenant {self.potion} potions et {self.hp}PV')
         # Retour sur combat
         return self.hp, self.potion
-               
+
+    def defend_special(self):
+        if self.defense !=0 or self.defense_s !=0:
+                print("Tu as déjà un bouclier !")
+        else:
+            self.defense_s = self.defense_number
+            print(f"Te voilà équipé d'un bouclier pendant {self.defense_number} tours !")
+            self.mana = 0
+            # Retour sur combat
+        return self.defense_s 
+
+    def attack_special(self, monster, score):
+        if monster.hp <= round(self.power * self.power_d):
+                score = monster.death(self, score)
+                monster.hp = 0
+        else:
+            if monster.defense <= 0:
+                monster.hp -= round(self.power * self.power_d)
+            else:
+                monster.hp -= round(self.power/1.5)
+        self.mana = 0
+        clear()
+        print("L'ennemi a subi",colored(f"-{round(self.power * self.power_d)}", "blue")," points de dégats")
+        # Retour sur combat
+        return score, monster.hp, self.mana
+
+@dataclass
+class Wizard(Player):
+
+    character : ClassVar[str] = "Wizard"
+    power : ClassVar[int] = 4
+    shield : ClassVar[int] = 3
+    defense_number : ClassVar[int] = 3
+    power_d : ClassVar[float] = 2.5
+    classic_attack : ClassVar[str] = "Sort de base"
+    special_attack : ClassVar[str] = "Fléau démoniaque"
+    classic_defense : ClassVar[str] = "Aura protectrice"
+    special_defense : ClassVar[str] = "Incantation divine"
+
+@dataclass
+class Paladin(Player):
+
+    character : ClassVar[str] = "Paladin"
+    power : ClassVar[int] = 5
+    shield : ClassVar[int] = 2
+    defense_number : ClassVar[int] = 4
+    power_d : ClassVar[float] = 2
+    classic_attack : ClassVar[str] = "Attaque classique "
+    special_attack : ClassVar[str] = "One Punch Paladin"
+    classic_defense : ClassVar[str] = "Protection normale"
+    special_defense : ClassVar[str] = "Defense ultime"
+
+@dataclass
+class Knight(Player):
+
+    character : ClassVar[str] = "Knight"
+    power : ClassVar[int] = 6
+    shield : ClassVar[int] = 3
+    defense_number : ClassVar[int] = 3
+    power_d : ClassVar[float] = 1.5
+    classic_attack : ClassVar[str] = "Sauvagerie modérée"
+    special_attack : ClassVar[str] = "Berserk Knight"
+    classic_defense : ClassVar[str] = "Ecu de bois"
+    special_defense : ClassVar[str] =  "Bouclier titanesque"
+

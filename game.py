@@ -1,4 +1,4 @@
-from entity import Player, Boss, Monster
+from entity import Player, Boss, Monster, Wizard, Paladin, Knight
 from random import randint
 from termcolor import colored
 import time
