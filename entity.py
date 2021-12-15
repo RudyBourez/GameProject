@@ -45,7 +45,13 @@ class Monster(Entity):
 
     def attack(self,player):
         """This function takes away health points from life's player when an ennemy attacks him."""
-        if player.defense != 0 :
+        if player.defense_s != 0 :
+            self.weak_attack = round(self.strength / 2)
+            player.defense_s -= 1
+            player.hp -= self.weak_attack
+            print("Vous avez subi",colored(f"-{self.weak_attack}","red"), f"points de dégâts de la part de l'ennemi")
+
+        elif player.defense != 0 :
             self.weak_attack = round(self.strength / 1.5)
             player.defense -= 1
             player.hp -= self.weak_attack
@@ -54,7 +60,8 @@ class Monster(Entity):
         else:    
             player.hp -= self.strength
             print("Vous avez subi",colored(f"-{self.strength}","red"), f"points de dégâts de la part de l'ennemi")
-            
+
+        player.mana +=1 
         print(f'{player.name} : {player.hp}/{player.hp_max} HP    |     {self.name} : {self.hp}/{self.hp_max} HP.')
         return player.hp
 
