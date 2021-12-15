@@ -206,16 +206,24 @@ class Player(Entity):
         print("Te voilà équipé d'un bouclier pendant 3 tours !")
         return self.defense
             
-    def drink_potion(self):
+    def drink_hp_potion(self):
         """This function gives back 30 HP to the player in battle."""
         if self.hp < self.hp_max -30:
             self.hp += 30
         else:
             self.hp = self.hp_max
         self.potion -= 1
-        print(f'-------Vous avez maintenant {self.potion} potions et {self.hp}PV')
+        print(f'-------Vous avez maintenant {self.potion} potions de vie et {self.hp} PV')
         # Retour sur combat
         return self.hp, self.potion
+
+    def drink_mana_potion(self):
+        """This function gives 6 manas to the player in battle."""
+        self.mana += 6
+        self.mana_potion -= 1
+        print(f'-------Vous avez maintenant {self.mana_potion} potions de mana et {self.mana} manas')
+        # Retour sur combat
+        return self.mana, self.mana_potion
 
     def defend_special(self):
         if self.defense !=0 or self.defense_s !=0:

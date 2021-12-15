@@ -77,7 +77,7 @@ class Game:
         path = ""
         print("4 chemins s'offrent à vous, choisissez l'un d'entre eux ou abandonner lâchement pour le moment.")
         while path not in ["$", "a", "b", "c", "d"]:
-            print("1: boutique | a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
+            print("$: boutique | a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
             path = input("Quel est votre choix $ | A | B | C | D ?      ")
             time.sleep(1)
             if path == "$":
@@ -154,13 +154,15 @@ class Game:
                             elif second_choice == "2":
                                 player.defense_s == player.defend_special() 
 
-
                 elif choice == "3":
                     if player.potion > 0 :
                         time.sleep(1)
-                        player.hp, player.potion = player.drink_potion()        
-                    else:
-                        print("Vous n'avez plus de potions")
+                        print(f"Votre stock de potions : {player.potion} pour les points de vie & {player.mana_potion} pour les manas.")
+                        second_choice = input(f"Quelle potion boire ?  => 1: pour les points de vie | 2: pour les manas\n")
+                        if second_choice == "1":
+                            player.hp, player.potion = player.drink_hp_potion() 
+                        elif second_choice == "2":
+                            player.mana, player.mana_potion == player.drink_mana_potion()
 
                 else:
                     print("Toi pas comprendre ?")

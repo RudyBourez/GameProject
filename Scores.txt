@@ -1,3 +1,4 @@
 Rudy =====> score = 50 | floor = 5
 Rudy =====> score = 74 | floor = 6
 Rudy =====> score = 107 | floor = 8
+Rudy =====> score = 38 | floor = 4
