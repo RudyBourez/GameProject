@@ -271,7 +271,7 @@ class Paladin(Player):
     shield : ClassVar[int] = 2
     defense_number : ClassVar[int] = 4
     power_d : ClassVar[float] = 2
-    classic_attack : ClassVar[str] = "Attaque classique "
+    classic_attack : ClassVar[str] = "Attaque classique"
     special_attack : ClassVar[str] = "One Punch Paladin"
     classic_defense : ClassVar[str] = "Protection normale"
     special_defense : ClassVar[str] = "Defense ultime"
