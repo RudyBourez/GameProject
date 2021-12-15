@@ -162,11 +162,12 @@ class Player(Entity):
     potion : ClassVar[int] = 3
     mana_potion : ClassVar[int] = 1
     defense : ClassVar[int] = 0
-    power : ClassVar[int] = 5
     experience : ClassVar[int] = 0
     exp_dict : ClassVar[dict] = {1: 30, 2: 120, 3: 250, 4: 420, 5: 620, 6: 870, 7: 1160, 8: 1490, 9: 1860, 10: 2270}
     level : ClassVar[int] = 1
     gold : ClassVar[int] = 0
+    mana : ClassVar[int] = 6
+    defense_s : ClassVar[int] = 0
         
     def attack(self,monster,score):
         """This function takes away health points from life's ennemy when the player attacks."""
@@ -196,16 +197,13 @@ class Player(Entity):
 
     def death(self):
         """This function allow to finish the game when the player is dead"""
+        print(colored("Votre ennemi vient malheureusement de vous porter un coup fatal ! \nVous gisez à terre en souffrant le martyre... \nEt dans un dernier râle d'agonie, vous succombez à vos blessures en vous demandant si ça valait vraiment la peine d'être venu...","red"))
         return False
     
     def defend(self):
         """This function give a shield to the player during 3 turns."""
-        if self.defense !=0 :
-            print("Tu as déjà un bouclier !")
-        else:
-            self.defense = 3
-            print("Te voilà équipé d'un bouclier pendant 3 tours !")
-        # Retour sur combat
+        self.defense = self.shield
+        print("Te voilà équipé d'un bouclier pendant 3 tours !")
         return self.defense
             
     def drink_potion(self):
