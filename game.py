@@ -28,8 +28,20 @@ class Game:
                 clear()
                 print("Votre bravoure vous honore ! Et ce sacrifice quasi certain restera à jamais dans les livres d'histoire ...")
                 name = input("Mais au fait, quel(le) est ton nom jeune aventurier(ère) ?    ")
-                player = Player(name, 50, 50, 5)
-                print(colored(f"{player.name}","blue")," dis-tu ?... Ca reviendra certainement un jour à la mode...")
+                chosen_character = ""
+                while chosen_character not in ["m","p","c"]:
+                    chosen_character = input("Quelle classe veux-tu jouer ? Magicien (M) - Paladin (P) - Chevalier (C)    ?")
+                    if chosen_character.lower() == "m":
+                        player = Wizard(name, 50, 50, 5)
+                        print(colored(f"{player.name}","yellow")," dis-tu jeune magicien ? ... C'est sûr qu'avec un nom pareil, tu n'avais pas de quoi devenir chevalier...")
+                    elif chosen_character.lower() == "p":
+                        player = Paladin(name, 50, 55, 5)
+                        print(colored(f"{player.name}","green")," dis-tu jeune paladin ? ... Ca reviendra certainement un jour à la mode...")
+                    elif chosen_character.lower() == "c":
+                        player = Knight(name, 50, 60, 5) 
+                        print(colored(f"{player.name}","blue")," dis-tu jeune chevalier ? ... On dirait plutôt un nom de fillette...")
+                    else:
+                        print("Toi pas comprendre ?")
                 time.sleep(1)
                 print("Trêve de bavardages ! Il est temps pour toi de te confronter au plus grand défi de ta vie !")
                 time.sleep(1)
@@ -104,26 +116,60 @@ class Game:
     def fight(self, player, monster):
         """Manages the fight between the player and a monster"""
         while player.hp > 0 and monster.hp > 0:
-            choice = input("1: Attaque | 2: Défendre | 3: Potion\n")
-            time.sleep(1)
-            if choice == "1":
-                self.score, monster.hp = player.attack(monster,self.score)
-            elif choice == "2":
-                clear()
-                player.defense = player.defend()
-            elif choice == "3":
-                if player.potion > 0 :
-                    pygame.mixer.music.load("Assets/drink1.wav")
-                    pygame.mixer.music.play()
-                    time.sleep(2)
-                    player.hp, player.potion = player.drink_potion()
+            choice = ""
+            while choice not in ["1","2","3"] or second_choice not in ["1","2"]:
+                choice = input("1: Attaquer | 2: Défendre | 3: Utiliser une potion \n")
+
+                if choice == "1":
+                    time.sleep(1)
+                    if player.mana < 8 :
+                        print(f"Votre jauge de mana n'est pas encore remplie ({player.mana}/8), vous ne pouvez utiliser qu'une attaque classique...")
+                        second_choice = input(f"Liste des attaques => 1: {player.classic_attack} 2: Siffloter en attendant que ça se passe\n")
+                        if second_choice == "1":
+                            self.score, monster.hp = player.attack(monster,self.score)
+                    else :
+                        print(f"Votre jauge de mana est pleine ! Vous pouvez utiliser une attaque spéciale !")
+                        second_choice = input(f"Liste des attaques => 1: {player.classic_attack} | 2: {player.special_attack}\n")
+                        if second_choice == "1":
+                            self.score, monster.hp = player.attack(monster,self.score)
+                        elif second_choice == "2":
+                            self.score, monster.hp, player.mana = player.attack_special(monster,self.score) 
+                        # else:
+
+                elif choice == "2":
+                    time.sleep(1)
+                    if player.defense !=0 or player.defense_s != 0:
+                        print("T'es bête ou quoi ?! Tu as déjà un bouclier !")
+                    else:
+                        if player.mana < 8 :
+                            print(f"Votre jauge de mana n'est pas encore remplie ({player.mana}/8), vous ne pouvez utiliser qu'une défense classique...")
+                            second_choice = input(f"Liste des défenses => 1: {player.classic_defense} 2: Siffloter en attendant que ça se passe\n")
+                            if second_choice == "1":
+                                player.defense = player.defend()
+                        else :
+                            print(f"Votre jauge de mana est pleine ! Vous pouvez utiliser une défense spéciale !")
+                            second_choice = input(f"Liste des défenses => 1: {player.classic_defense} | 2: {player.special_defense}\n")
+                            if second_choice == "1":
+                                player.defense = player.defend()
+                            elif second_choice == "2":
+                                player.defense_s == player.defend_special() 
+
+
+                elif choice == "3":
+                    if player.potion > 0 :
+                        time.sleep(1)
+                        player.hp, player.potion = player.drink_potion()        
+                    else:
+                        print("Vous n'avez plus de potions")
+
                 else:
-                    print("Vous n'avez plus de potions")
+                    print("Toi pas comprendre ?")
             
             if monster.hp > 0 and choice in ["1", "2"]:
                 player.hp = monster.attack(player)
         if player.hp <= 0 :
             self.running = player.death()
+
         else:
             pygame.mixer.music.load("Assets/fighting.mp3")
             pygame.mixer.music.play()
@@ -140,8 +186,8 @@ class Game:
         print(f"Vous quittez le donjon! Votre score est de {self.score} et votre étage de {self.floor}")
         with open('save.csv','w', newline='\n') as csvfile:
             save_writer = csv.writer(csvfile, delimiter ='|')
-            save_writer.writerow([player.name, player.hp, player.hp_max, player.strength, player.potion, player.power, player.experience, player.level, self.score, self.floor ])
-
+            save_writer.writerow([player.name, player.character, player.hp, player.hp_max, player.strength, player.potion, player.power, player.experience, player.level, player.mana, player.mana_potion, player.gold, player.defense, player.defense_s, self.score, self.floor ])
+    
     def buy(self,player):
         print("Healing_potion(100gold) : 1 | Mana_potion(300gold) : 2 | Exit : 3")
         print(f"Vous avez {player.gold} gold")
@@ -182,17 +228,29 @@ class Game:
                 saved_games = list(csv.reader(csvfile, delimiter = '|'))
                 for saved_game in saved_games:
                     name = str(saved_game[0])
-                    hp = int(saved_game[1])
-                    hp_max = int(saved_game[2])
-                    strength = int(saved_game[3])
+                    character = str(saved_game[1])
+                    hp = int(saved_game[2])
+                    hp_max = int(saved_game[3])
+                    strength = int(saved_game[4])
+
+                    if character == "Wizard" :  
+                        player = Wizard(name,hp,hp_max,strength)
+                    elif character == "Paladin":
+                        player = Paladin(name,hp,hp_max,strength)
+                    elif character == "Knight":
+                        player = Knight(name,hp,hp_max,strength)
+                    player.potion = int(saved_game[5])
+                    player.power = int(saved_game[6])
+                    player.experience = int(saved_game[7])
+                    player.level = int(saved_game[8])
+                    player.mana = int(saved_game[9])
+                    player.mana_potion = int(saved_game[10])
+                    player.gold = int(saved_game[11])
+                    player.defense = int(saved_game[12])
+                    player.defense_s = int(saved_game[13])
+                    self.score = int(saved_game[14])
+                    self.floor = int(saved_game[15])
                     
-                    player = Player(name,hp,hp_max,strength)
-                    player.potion = int(saved_game[4])
-                    player.power = int(saved_game[5])
-                    player.experience = float(saved_game[6])
-                    player.level = int(saved_game[7])
-                    self.score = int(saved_game[8])
-                    self.floor = int(saved_game[9])
         except FileNotFoundError:
             print("Le fichier save.csv n'existe pas")     
         except:
