@@ -10,23 +10,19 @@ clear = lambda: os.system('cls') # clear the console
 
 @dataclass
 class Entity(metaclass = ABCMeta):
-    
     name : str
     hp : int
     hp_max : int
     strength : int
-
     @abstractmethod
     def attack(self):
         pass
-
     @abstractmethod
     def death(self):
         pass
 
 @dataclass
 class Monster(Entity):
-
     points : ClassVar[int] = 10
     droprate : ClassVar[float] = 10
     exp_points : ClassVar[int] = 10
@@ -62,11 +58,11 @@ class Monster(Entity):
         print(f'{player.name} : {player.hp}/{player.hp_max} HP    |     {self.name} : {self.hp}/{self.hp_max} HP.')
         return player.hp
 
-
     def death(self, player, score):
         """"This function will delete the last summoned monster and run the drop() method"""
         print(f"Félicitations ! Vous avez réussi à vaincre l'ennemi!")
-        if self.droprate >= randint(0,100):
+        number = randint(0,100)
+        if self.droprate >= number:
             print("L'ennemi a laissé tomber quelque chose")
             item = {"une dague" : 20, "Potion": 50, "un cure-dent": 30 } 
             dropped = Drop(item,player.strength, player.power, player.potion)
@@ -78,9 +74,8 @@ class Monster(Entity):
         return score
 
 class Boss(Entity):
-
     points : ClassVar[int] = 15
-    droprate : ClassVar[float] = 15
+    droprate : ClassVar[float] = 30
     weak_attack : ClassVar[float]
     defense : ClassVar[int] = 0
     countdown : ClassVar[int] = 0
@@ -90,7 +85,7 @@ class Boss(Entity):
     def level(self,floor,difficulty):
         """ This function give the force and the health points of the boss, using the floor's level and the difficulty's level."""
 
-        self.droprate *= (((floor/10)+difficulty)+1)
+        self.droprate *= (floor/10) + difficulty + 1
         self.strength = round(self.strength * (((floor/10)+difficulty)+1))
         self.hp = round(self.hp * (((floor/10)+difficulty)+1))
         self.hp_max = self.hp
@@ -127,7 +122,8 @@ class Boss(Entity):
     def death(self, player, score):
         """"This function will delete the last summoned monster and run the drop() method"""
         print(f"Félicitations ! Vous avez réussi à vaincre l'ennemi!")
-        if self.droprate >= randint(0,100):
+        number = randint(0,100)
+        if self.droprate >= number:
             print("L'ennemi a laissé tomber quelque chose")
             item = {"Excalibur" : 1, "une hâche": 49, "une épee": 30, "Potion": 20 } 
             dropped = Drop(item, player.strength, player.power, player.potion)
@@ -135,6 +131,7 @@ class Boss(Entity):
         score += self.points
         player.experience += self.exp_points
         player.gold += self.gold
+        time.sleep(1)
         clear()
         return score
     
@@ -146,8 +143,7 @@ class Boss(Entity):
         return self.defense
 
 @dataclass
-class Player(Entity):
-    
+class Player(Entity):   
     potion : ClassVar[int] = 3
     mana_potion : ClassVar[int] = 1
     defense : ClassVar[int] = 0
@@ -198,9 +194,9 @@ class Player(Entity):
         return self.defense
             
     def drink_potion(self):
-        """This function gives back 20 HP to the player in battle."""
-        if self.hp < self.hp_max -20:
-            self.hp += 20
+        """This function gives back 30 HP to the player in battle."""
+        if self.hp < self.hp_max -30:
+            self.hp += 30
         else:
             self.hp = self.hp_max
         self.potion -= 1

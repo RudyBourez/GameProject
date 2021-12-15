@@ -11,16 +11,15 @@ Pour lancer le jeu, installer les éléments de requirements.txt puis éxécuter
 
 # Améliorations
 
-* Création de différentes classes de personnages (Magicien, Paladin, Guerrier)
-* Gestion de Magic Points (MP)
 * Ajouter du Lore (histoire)
 * Bruitages
 
 # Améliorations réalisées
 
+* Création de différentes classes de personnages (Wizard, Paladin, Warrior)
 * Amélioration graphique
 * Level up (gain de points d'expérience)
 * Ajout d'un système de pièces d'or 
-* Sauvegarde
+* Sauvegarde / chargement
 * D'autres potions
 * Boutique

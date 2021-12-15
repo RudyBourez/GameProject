@@ -185,24 +185,16 @@ class Game:
                     hp = int(saved_game[1])
                     hp_max = int(saved_game[2])
                     strength = int(saved_game[3])
-                    potion = int(saved_game[4])
-                    power = int(saved_game[5])
-                    experience = int(saved_game[6])
-                    level = int(saved_game[7])
-                    score = int(saved_game[8])
-                    floor = int(saved_game[9])
                     
                     player = Player(name,hp,hp_max,strength)
-                    player.potion = potion
-                    player.power = power
-                    player.experience = experience
-                    player.level = level
-                    self.score = score
-                    self.floor = floor
-
-                    self.run(player)
+                    player.potion = int(saved_game[4])
+                    player.power = int(saved_game[5])
+                    player.experience = float(saved_game[6])
+                    player.level = int(saved_game[7])
+                    self.score = int(saved_game[8])
+                    self.floor = int(saved_game[9])
         except FileNotFoundError:
             print("Le fichier save.csv n'existe pas")     
         except:
-            raise ValueError("Erreur dans le fichier save.csv")
-
+            raise Exception("Erreur dans le fichier save.csv")
+        self.run(player)
