@@ -49,7 +49,15 @@ class Monster(Entity):
 
     def attack(self,player):
         """This function takes away health points from life's player when an ennemy attacks him."""
-        if player.defense != 0 :
+
+        
+        if player.defense_s != 0 :
+            self.weak_attack = round(self.strength / 2)
+            player.defense_s -= 1
+            player.hp -= self.weak_attack
+            print("Vous avez subi",colored(f"-{self.weak_attack}","red"), f"points de dégâts de la part de l'ennemi")
+
+        elif player.defense != 0 :
             self.weak_attack = round(self.strength / 1.5)
             player.defense -= 1
             player.hp -= self.weak_attack
@@ -58,7 +66,8 @@ class Monster(Entity):
         else:    
             player.hp -= self.strength
             print("Vous avez subi",colored(f"-{self.strength}","red"), f"points de dégâts de la part de l'ennemi")
-            
+
+        player.mana +=1 
         print(f'{player.name} : {player.hp}/{player.hp_max} HP    |     {self.name} : {self.hp}/{self.hp_max} HP.')
         return player.hp
 
@@ -103,11 +112,18 @@ class Boss(Entity):
     def attack(self,player):
         """This function takes away health points from life's player when the Boss attacks him."""
         if self.countdown < 2 : 
-            if player.defense != 0 :
+
+            if player.defense_s != 0 :
+                self.weak_attack = round(self.strength / 2)
+                player.defense_s -= 1
+                player.hp -= self.weak_attack
+                print(f"Vous avez subi {self.weak_attack} points de dégâts de la part de l'ennemi")
+
+            elif player.defense != 0 :
                 self.weak_attack = round(self.strength / 1.5)
                 player.defense -= 1
                 player.hp -= self.weak_attack
-                print(f"Vous avez subi {self.weak_attack} points de dégâts de la part de l'ennemi")
+                print("Vous avez subi",colored(f"-{self.weak_attack}","red"), f"points de dégâts de la part de l'ennemi")
 
             else:    
                 player.hp -= self.strength
@@ -117,6 +133,7 @@ class Boss(Entity):
                 # Come back to the fight
             self.countdown += 1
             self.defense -= 1
+            player.mana += 1
 
         else:
             self.defense = self.defend()
@@ -151,11 +168,12 @@ class Player(Entity):
     potion : ClassVar[int] = 3
     mana_potion : ClassVar[int] = 1
     defense : ClassVar[int] = 0
-    power : ClassVar[int] = 5
     experience : ClassVar[int] = 0
     exp_dict : ClassVar[dict] = {1: 30, 2: 120, 3: 250, 4: 420, 5: 620, 6: 870, 7: 1160, 8: 1490, 9: 1860, 10: 2270}
     level : ClassVar[int] = 1
     gold : ClassVar[int] = 0
+    mana : ClassVar[int] = 6
+    defense_s : ClassVar[int] = 0
         
     def attack(self,monster,score):
         """This function takes away health points from life's ennemy when the player attacks."""
@@ -185,15 +203,13 @@ class Player(Entity):
 
     def death(self):
         """This function allow to finish the game when the player is dead"""
+        print(colored("Votre ennemi vient malheureusement de vous porter un coup fatal ! \nVous gisez à terre en souffrant le martyre... \nEt dans un dernier râle d'agonie, vous succombez à vos blessures en vous demandant si ça valait vraiment la peine d'être venu...","red"))
         return False
     
     def defend(self):
         """This function give a shield to the player during 3 turns."""
-        if self.defense !=0 :
-            print("Tu as déjà un bouclier !")
-        else:
-            self.defense = 3
-            print("Te voilà équipé d'un bouclier pendant 3 tours !")
+        self.defense = self.shield
+        print("Te voilà équipé d'un bouclier pendant 3 tours !")
         # Retour sur combat
         return self.defense
             
@@ -207,4 +223,67 @@ class Player(Entity):
         print(f'-------Vous avez maintenant {self.potion} potions et {self.hp}PV')
         # Retour sur combat
         return self.hp, self.potion
-               
+
+    def defend_special(self):
+        if self.defense !=0 or self.defense_s !=0:
+                print("Tu as déjà un bouclier !")
+        else:
+            self.defense_s = self.defense_number
+            print(f"Te voilà équipé d'un bouclier pendant {self.defense_number} tours !")
+            self.mana = 0
+            # Retour sur combat
+        return self.defense_s 
+
+    def attack_special(self, monster, score):
+        if monster.hp <= round(self.power * self.power_d):
+                score = monster.death(self, score)
+                monster.hp = 0
+        else:
+            if monster.defense <= 0:
+                monster.hp -= round(self.power * self.power_d)
+            else:
+                monster.hp -= round(self.power/1.5)
+        self.mana = 0
+        clear()
+        print("L'ennemi a subi",colored(f"-{round(self.power * self.power_d)}", "blue")," points de dégats")
+        # Retour sur combat
+        return score, monster.hp, self.mana
+
+@dataclass
+class Wizard(Player):
+
+    character : ClassVar[str] = "Wizard"
+    power : ClassVar[int] = 4
+    shield : ClassVar[int] = 3
+    defense_number : ClassVar[int] = 3
+    power_d : ClassVar[float] = 2.5
+    classic_attack : ClassVar[str] = "Sort de base"
+    special_attack : ClassVar[str] = "Fléau démoniaque"
+    classic_defense : ClassVar[str] = "Aura protectrice"
+    special_defense : ClassVar[str] = "Incantation divine"
+
+@dataclass
+class Paladin(Player):
+
+    character : ClassVar[str] = "Paladin"
+    power : ClassVar[int] = 5
+    shield : ClassVar[int] = 2
+    defense_number : ClassVar[int] = 4
+    power_d : ClassVar[float] = 2
+    classic_attack : ClassVar[str] = "Attaque classique "
+    special_attack : ClassVar[str] = "One Punch Paladin"
+    classic_defense : ClassVar[str] = "Protection normale"
+    special_defense : ClassVar[str] = "Defense ultime"
+
+@dataclass
+class Knight(Player):
+
+    character : ClassVar[str] = "Knight"
+    power : ClassVar[int] = 6
+    shield : ClassVar[int] = 3
+    defense_number : ClassVar[int] = 3
+    power_d : ClassVar[float] = 1.5
+    classic_attack : ClassVar[str] = "Sauvagerie modérée"
+    special_attack : ClassVar[str] = "Berserk Knight"
+    classic_defense : ClassVar[str] = "Ecu de bois"
+    special_defense : ClassVar[str] =  "Bouclier titanesque"
