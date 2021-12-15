@@ -61,7 +61,9 @@ class Game:
 
     def run(self,player):
         """Start the game"""
-      
+        pygame.mixer.music.load("Assets/laughter.mp3")
+        pygame.mixer.music.play()
+        time.sleep(1)
         while self.running:
             choice = self.choice(player)
             if not choice:
@@ -156,15 +158,14 @@ class Game:
 
                 elif choice == "3": # Drink potion
                     if player.potion > 0 :
-                        pygame.mixer.music.load("Assets/drink1.wav")
-                        pygame.mixer.music.play()
-                        time.sleep(2)
                         print(f"Votre stock de potions : {player.potion} pour les points de vie & {player.mana_potion} pour les manas.")
                         second_choice = input(f"Quelle potion boire ?  => 1: pour les points de vie | 2: pour les manas\n")
                         if second_choice == "1":
-                            player.hp, player.potion = player.drink_hp_potion() 
+                            player.hp, player.potion = player.drink_hp_potion()
                         elif second_choice == "2":
                             player.mana, player.mana_potion == player.drink_mana_potion()
+                        pygame.mixer.music.load("Assets/drink1.wav")
+                        pygame.mixer.music.play()
 
                 else: # Uncorrect input
                     print("Toi pas comprendre ?")
@@ -212,7 +213,7 @@ class Game:
                         player = Paladin(name,hp,hp_max,strength)
                     elif character == "Knight":
                         player = Knight(name,hp,hp_max,strength)
-                        
+
                     player.potion = int(saved_game[5])
                     player.power = int(saved_game[6])
                     player.experience = int(saved_game[7])
