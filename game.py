@@ -42,7 +42,7 @@ class Game:
                 break
             elif defi.lower() == "n":
                 self.running = False
-                print("Votre décision est lourde de conséquences. Claire restera dans son donjon pour le restant de ses jours...\n Ouste péant ! Reviens quand tu seras un peu plus valeureux !")
+                print("Votre décision est lourde de conséquences. Claire restera dans son donjon pour le restant de ses jours...\n Ouste couard ! Reviens quand tu seras un peu plus valeureux !")
                 break
             else:
                 defi = input("Toi pas comprendre ? Y ou N ? ou L ")
