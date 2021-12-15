@@ -64,11 +64,11 @@ class Game:
         time.sleep(1)
         path = ""
         print("4 chemins s'offrent à vous, choisissez l'un d'entre eux ou abandonner lâchement pour le moment.")
-        while path not in ["1", "a", "b", "c", "d"]:
+        while path not in ["$", "a", "b", "c", "d"]:
             print("1: boutique | a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
-            path = input("Quel est votre choix 1 | A | B | C | D ?      ")
+            path = input("Quel est votre choix $ | A | B | C | D ?      ")
             time.sleep(1)
-            if path == "1":
+            if path == "$":
                 self.buy(player)
                 path = ""
             elif path.lower() in ["a","b","c"]:
