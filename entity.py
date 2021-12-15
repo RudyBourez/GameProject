@@ -161,13 +161,17 @@ class Boss(Entity):
 class Player(Entity):   
     potion : ClassVar[int] = 3
     mana_potion : ClassVar[int] = 1
-    defense : ClassVar[int] = 0
+    defense : ClassVar[int] = 0 # Damage reduction when equipped with a classical shield
+    power : ClassVar[int]
+    power_d : ClassVar[float] # Damage factor when using special attack
+    shield : ClassVar[int] # Number of turns with a shield during classical defense
+    defense_number : ClassVar[int] # Number of turns with a shield during special defense
     experience : ClassVar[int] = 0
     exp_dict : ClassVar[dict] = {1: 30, 2: 120, 3: 250, 4: 420, 5: 620, 6: 870, 7: 1160, 8: 1490, 9: 1860, 10: 2270}
     level : ClassVar[int] = 1
     gold : ClassVar[int] = 10
     mana : ClassVar[int] = 6
-    defense_s : ClassVar[int] = 0
+    defense_s : ClassVar[int] = 0 # Damage reduction when equipped with a special shield
         
     def attack(self,monster,score):
         """This function takes away health points from life's ennemy when the player attacks."""
@@ -226,16 +230,18 @@ class Player(Entity):
         return self.mana, self.mana_potion
 
     def defend_special(self):
+        """Generates a better shield but need mana to use"""
         if self.defense !=0 or self.defense_s !=0:
                 print("Tu as déjà un bouclier !")
         else:
             self.defense_s = self.defense_number
-            print(f"Te voilà équipé d'un bouclier pendant {self.defense_number} tours !")
+            print(f"Te voilà équipé d'un bouclier pendant {self.defense_s} tours !")
             self.mana -= 8
             # Retour sur combat
         return self.defense_s 
 
     def attack_special(self, monster, score):
+        """Generates a stronger attack but need mana to use"""
         if monster.hp <= round(self.power * self.power_d):
                 score = monster.death(self, score)
                 monster.hp = 0
@@ -251,6 +257,7 @@ class Player(Entity):
         return score, monster.hp, self.mana
 
     def buy(self):
+        """Create a shop and allow the player to buy some stuffs with gold"""
         print("Potion_HP(50gold) : 1 | Potion_mana(100gold) : 2 | Exit : 3")
         print(f"Vous avez {self.gold} gold")
         buying = True

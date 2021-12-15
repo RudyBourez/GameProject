@@ -20,7 +20,7 @@ class Game:
 
     def introducing(self):
         """Description of the game and beginning. Create an instance for a new player or load the last saved game."""
-        print(colored('Bienvenue sur le jeu :', 'white'),colored( 'Simplon Escape !', 'red'))
+        print('Bienvenue sur le jeu :',colored( 'Simplon Escape !', 'red'))
         print("Le but du jeu est de sauver la princesse" ,colored("Claire","red"), "emprisonnée en haut du donjon Simplon.co. \nVous êtes le Héros de cette quête et partez à la rescousse de la princesse. \nVous aurez à affronter de nombreux ennemis au cours de votre ascension dans le donjon.")
         defi = input("-----------------------------------------\nPréférez-vous démarrer une partie ? (Y/N) ou charger votre dernière partie ? (L)")
         while self.running:
@@ -42,7 +42,7 @@ class Game:
                         print(colored(f"{player.name}","blue")," dis-tu jeune chevalier ? ... On dirait plutôt un nom de fillette...")
                     else:
                         print("Toi pas comprendre ?")
-                time.sleep(1)
+                time.sleep(1) # Ajoute du délai
                 print("Trêve de bavardages ! Il est temps pour toi de te confronter au plus grand défi de ta vie !")
                 time.sleep(1)
                 print("------------------------------------------ Génération du donjon ---------------------------------------------")
@@ -66,18 +66,18 @@ class Game:
             choice = self.choice(player)
             if not choice:
                 break
-        if self.score != 0:
+        if self.score != 0: # Save the score when the game is over
             with open("Scores.txt", 'a') as scores:
                 scores.write(f'{player.name} =====> score = {self.score} | floor = {self.floor}\n')
                 
     def choice(self, player):
-        """Choice of a path giving a certain difficulty used for the spawn of the monster"""
+        """Choice of a path giving a certain difficulty used for the spawn of the monster or the boss"""
         print(f"                           Vous arrivez à l'étage {self.floor} et votre score est de {self.score}\n")
         time.sleep(1)
         path = ""
         print("4 chemins s'offrent à vous, choisissez l'un d'entre eux ou abandonner lâchement pour le moment.")
         while path not in ["$", "a", "b", "c", "d"]:
-            print("$: boutique | a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
+            print("$: Boutique | a: Chemin des petits joueurs (facile) | b: Route normale | c: Sentier des braves (difficile) | d: Sauvegarder et quitter")
             path = input("Quel est votre choix $ | A | B | C | D ?      ")
             time.sleep(1)
             if path == "$":
@@ -98,11 +98,11 @@ class Game:
             else:
                 print("Toi pas comprendre ?")
             if player.hp <= 0:
-                break
+                break # Force to end the game
 
     def summon_monster(self, difficulty, player):
-        """Generates a monster or a boss depending of the floor"""
-        if self.floor % 5 == 0:
+        """Generates a monster or a boss depending of the floor and the difficulty"""
+        if self.floor % 5 == 0: # Boss every 5 floors
             list_boss_name = ["Dracula", "Frankenstein", "BigTroll", "Lucifer"]
             boss_name = list_boss_name[randint(0,len(list_boss_name)-1)]
             monster = Boss(boss_name, 35, 35, 8)
@@ -110,19 +110,20 @@ class Game:
             list_monster_name = ["Un gobelin", "Un troll", "Un orc", "Un zombie", "Un mimic", "Yanis: le voleur d'excalibur"]
             monster_name = list_monster_name[randint(0,len(list_monster_name)-1)]
             monster = Monster(monster_name, 20, 20, 4)
+
         monster.level(self.floor, difficulty)
         self.fight(player, monster)
 
     def fight(self, player, monster):
-        """Manages the fight between the player and a monster"""
+        """Manages the fight between the player and a monster or a boss"""
         while player.hp > 0 and monster.hp > 0:
             choice = ""
             while choice not in ["1","2","3"] or second_choice not in ["1","2"]:
                 choice = input("1: Attaquer | 2: Défendre | 3: Utiliser une potion \n")
 
-                if choice == "1":
+                if choice == "1": # Attack
                     time.sleep(1)
-                    if player.mana < 8 :
+                    if player.mana < 8 : 
                         print(f"Votre jauge de mana n'est pas encore remplie ({player.mana}/8), vous ne pouvez utiliser qu'une attaque classique...")
                         second_choice = input(f"Liste des attaques => 1: {player.classic_attack} 2: Siffloter en attendant que ça se passe\n")
                         if second_choice == "1":
@@ -134,9 +135,8 @@ class Game:
                             self.score, monster.hp = player.attack(monster,self.score)
                         elif second_choice == "2":
                             self.score, monster.hp, player.mana = player.attack_special(monster,self.score) 
-                        # else:
 
-                elif choice == "2":
+                elif choice == "2": # Defend
                     time.sleep(1)
                     if player.defense !=0 or player.defense_s != 0:
                         print("T'es bête ou quoi ?! Tu as déjà un bouclier !")
@@ -154,9 +154,11 @@ class Game:
                             elif second_choice == "2":
                                 player.defense_s == player.defend_special() 
 
-                elif choice == "3":
+                elif choice == "3": # Drink potion
                     if player.potion > 0 :
-                        time.sleep(1)
+                        pygame.mixer.music.load("Assets/drink1.wav")
+                        pygame.mixer.music.play()
+                        time.sleep(2)
                         print(f"Votre stock de potions : {player.potion} pour les points de vie & {player.mana_potion} pour les manas.")
                         second_choice = input(f"Quelle potion boire ?  => 1: pour les points de vie | 2: pour les manas\n")
                         if second_choice == "1":
@@ -164,11 +166,12 @@ class Game:
                         elif second_choice == "2":
                             player.mana, player.mana_potion == player.drink_mana_potion()
 
-                else:
+                else: # Uncorrect input
                     print("Toi pas comprendre ?")
             
             if monster.hp > 0 and choice in ["1", "2"]:
                 player.hp = monster.attack(player)
+
         if player.hp <= 0 :
             self.running = player.death()
 
@@ -178,11 +181,12 @@ class Game:
             time.sleep(1)
             if player.experience > player.exp_dict[player.level]:
                 player.level_up()
+
             del monster
             self.floor += 1
             print(f"Votre score est de ",colored(f"{self.score}","red")," et vous passez à l'étage ",colored(f"{self.floor}","red"))
             
-    def quit(self,player):
+    def quit(self,player): # Save and quit
         """Allow to quit the game and save the progression"""
         self.running = False
         print(f"Vous quittez le donjon! Votre score est de {self.score} et votre étage de {self.floor}")
@@ -208,6 +212,7 @@ class Game:
                         player = Paladin(name,hp,hp_max,strength)
                     elif character == "Knight":
                         player = Knight(name,hp,hp_max,strength)
+                        
                     player.potion = int(saved_game[5])
                     player.power = int(saved_game[6])
                     player.experience = int(saved_game[7])
