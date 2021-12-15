@@ -32,13 +32,13 @@ class Game:
                 while chosen_character not in ["m","p","c"]:
                     chosen_character = input("Quelle classe veux-tu jouer ? Magicien (M) - Paladin (P) - Chevalier (C)    ?")
                     if chosen_character.lower() == "m":
-                        player = Wizard(name, 50, 50, 5)
+                        player = Wizard(name, 50, 50, 4)
                         print(colored(f"{player.name}","yellow")," dis-tu jeune magicien ? ... C'est sûr qu'avec un nom pareil, tu n'avais pas de quoi devenir chevalier...")
                     elif chosen_character.lower() == "p":
-                        player = Paladin(name, 50, 55, 5)
+                        player = Paladin(name, 55, 55, 5)
                         print(colored(f"{player.name}","green")," dis-tu jeune paladin ? ... Ca reviendra certainement un jour à la mode...")
                     elif chosen_character.lower() == "c":
-                        player = Knight(name, 50, 60, 5) 
+                        player = Knight(name, 60, 60, 6) 
                         print(colored(f"{player.name}","blue")," dis-tu jeune chevalier ? ... On dirait plutôt un nom de fillette...")
                     else:
                         print("Toi pas comprendre ?")

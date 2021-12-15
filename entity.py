@@ -223,7 +223,7 @@ class Player(Entity):
         else:
             self.defense_s = self.defense_number
             print(f"Te voilà équipé d'un bouclier pendant {self.defense_number} tours !")
-            self.mana = 0
+            self.mana -= 8
             # Retour sur combat
         return self.defense_s 
 
@@ -236,7 +236,7 @@ class Player(Entity):
                 monster.hp -= round(self.power * self.power_d)
             else:
                 monster.hp -= round(self.power/1.5)
-        self.mana = 0
+        self.mana -= 8
         clear()
         print("L'ennemi a subi",colored(f"-{round(self.power * self.power_d)}", "blue")," points de dégats")
         # Retour sur combat
