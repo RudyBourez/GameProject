@@ -39,7 +39,7 @@ class Game:
                 self.run(player)
             elif defi.lower() == "l":
                 self.load()
-                defi = input("-----------------------------------------\nPréférez-vous démarrer une partie ? (Y/N) ou charger votre dernière partie ? (L)")
+                break
             elif defi.lower() == "n":
                 self.running = False
                 print("Votre décision est lourde de conséquences. Claire restera dans son donjon pour le restant de ses jours...\n Ouste péant ! Reviens quand tu seras un peu plus valeureux !")
