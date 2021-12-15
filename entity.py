@@ -28,7 +28,7 @@ class Monster(Entity):
     exp_points : ClassVar[int] = 10
     weak_attack : ClassVar[float]
     defense : int = 0
-    gold : ClassVar[int] = 10
+    gold : ClassVar[int] = 20
 
     def level(self,floor,difficulty):
         """ This function give the force and the health points of the monster, using the floor's level and the difficulty's level."""
@@ -87,7 +87,7 @@ class Boss(Entity):
     defense : ClassVar[int] = 0
     countdown : ClassVar[int] = 0
     exp_points : ClassVar[int] = 100
-    gold : ClassVar[int] = 100
+    gold : ClassVar[int] = 150
 
     def level(self,floor,difficulty):
         """ This function give the force and the health points of the boss, using the floor's level and the difficulty's level."""
@@ -165,7 +165,7 @@ class Player(Entity):
     experience : ClassVar[int] = 0
     exp_dict : ClassVar[dict] = {1: 30, 2: 120, 3: 250, 4: 420, 5: 620, 6: 870, 7: 1160, 8: 1490, 9: 1860, 10: 2270}
     level : ClassVar[int] = 1
-    gold : ClassVar[int] = 0
+    gold : ClassVar[int] = 10
     mana : ClassVar[int] = 6
     defense_s : ClassVar[int] = 0
         
@@ -250,6 +250,38 @@ class Player(Entity):
         # Retour sur combat
         return score, monster.hp, self.mana
 
+    def buy(self):
+        print("Potion_HP(50gold) : 1 | Potion_mana(100gold) : 2 | Exit : 3")
+        print(f"Vous avez {self.gold} gold")
+        buying = True
+        while buying:
+            item = input("Que voulez-vous acheter?  ")
+            if item == "1":
+                number = input("Combien en voulez-vous?   ")
+                try:
+                    if self.gold >= int(number) * 50 and int(number) >= 0:
+                        self.potion += int(number)
+                        self.gold -= int(number) * 50
+                        print(f"{self.gold}")
+                        print(f"Vous avez maintenant {self.potion} potions")
+                    else :
+                        print("Vous n'avez pas assez de monnaie")
+                except:
+                    print("Veuillez indiquer un nombre correct")
+            elif item == "2":
+                number = input("Combien en voulez-vous?   ")
+                try:
+                    if self.gold >= int(number) * 100 and int(number) >= 0:
+                        self.mana_potion += int(number)
+                        self.gold -= int(number) * 100
+                        print(f"{self.gold}")
+                        print(f"Vous avez maintenant {self.mana_potion} potions de mana")
+                    else :
+                        print("Vous n'avez pas assez de monnaie")
+                except:
+                    print("Veuillez indiquer un nombre correct")
+            elif item == "3":
+                buying = False
 @dataclass
 class Wizard(Player):
 

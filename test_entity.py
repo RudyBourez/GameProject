@@ -13,6 +13,7 @@ def boss_test():
 @pytest.fixture
 def player_test():
     return Knight("Boris", 60, 60, 6)
+
 class TestMonster:
     def test_init(self,monster_test):
         assert monster_test.name == "Gobelin"
@@ -76,7 +77,18 @@ class TestWizard:
             assert wizard_test.attack_special(boss_test, 20) == (20, 25, -18)
             boss_test.defense = 1
             assert wizard_test.attack_special(boss_test, 20) == (20, 22, -26)
-    
+
+        def test_buy(self, player_test, monkeypatch):
+            player_test.gold = 300
+            response = iter(["1","4","2","1","a","1","2","3"])
+            monkeypatch.setattr('builtins.input', lambda x: next(response))
+            player_test.buy()
+            assert player_test.gold == 0
+            assert player_test.potion == 7
+            assert player_test.mana_potion == 2
+
+
+
 @pytest.fixture
 def paladin_test():
     return Paladin("claire",55,55,5)
