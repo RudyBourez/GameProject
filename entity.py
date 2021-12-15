@@ -10,29 +10,25 @@ clear = lambda: os.system('cls') # clear the console
 
 @dataclass
 class Entity(metaclass = ABCMeta):
-    
     name : str
     hp : int
     hp_max : int
     strength : int
-
     @abstractmethod
     def attack(self):
         pass
-
     @abstractmethod
     def death(self):
         pass
 
 @dataclass
 class Monster(Entity):
-
     points : ClassVar[int] = 10
     droprate : ClassVar[float] = 10
     exp_points : ClassVar[int] = 10
     weak_attack : ClassVar[float]
     defense : int = 0
-    gold : ClassVar[int] = 10
+    gold : ClassVar[int] = 20
 
     def level(self,floor,difficulty):
         """ This function give the force and the health points of the monster, using the floor's level and the difficulty's level."""
@@ -41,7 +37,7 @@ class Monster(Entity):
         self.strength = round(self.strength * (((floor/10)+difficulty)+1))
         self.hp = round(self.hp * (((floor/10)+difficulty)+1))
         self.hp_max = self.hp
-        self.gold = round(self.gold * ((floor/10)+difficulty))
+        self.gold = round(self.gold * ((floor/10)+difficulty+1))
         self.points = round(self.points * (((floor/10)+difficulty)+1))
         self.exp_points += floor * 5
         print(colored(f"           {self.name}","green"), f"s'approche de vous ! Il posséde {self.hp} points de vie et une force de {self.strength}.")
@@ -49,7 +45,13 @@ class Monster(Entity):
 
     def attack(self,player):
         """This function takes away health points from life's player when an ennemy attacks him."""
-        if player.defense != 0 :
+        if player.defense_s != 0 :
+            self.weak_attack = round(self.strength / 2)
+            player.defense_s -= 1
+            player.hp -= self.weak_attack
+            print("Vous avez subi",colored(f"-{self.weak_attack}","red"), f"points de dégâts de la part de l'ennemi")
+
+        elif player.defense != 0 :
             self.weak_attack = round(self.strength / 1.5)
             player.defense -= 1
             player.hp -= self.weak_attack
@@ -58,15 +60,16 @@ class Monster(Entity):
         else:    
             player.hp -= self.strength
             print("Vous avez subi",colored(f"-{self.strength}","red"), f"points de dégâts de la part de l'ennemi")
-            
+
+        player.mana +=1 
         print(f'{player.name} : {player.hp}/{player.hp_max} HP    |     {self.name} : {self.hp}/{self.hp_max} HP.')
         return player.hp
-
 
     def death(self, player, score):
         """"This function will delete the last summoned monster and run the drop() method"""
         print(f"Félicitations ! Vous avez réussi à vaincre l'ennemi!")
-        if self.droprate >= randint(0,100):
+        number = randint(0,100)
+        if self.droprate >= number:
             print("L'ennemi a laissé tomber quelque chose")
             item = {"une dague" : 20, "Potion": 50, "un cure-dent": 30 } 
             dropped = Drop(item,player.strength, player.power, player.potion)
@@ -78,36 +81,42 @@ class Monster(Entity):
         return score
 
 class Boss(Entity):
-
     points : ClassVar[int] = 15
-    droprate : ClassVar[float] = 15
+    droprate : ClassVar[float] = 30
     weak_attack : ClassVar[float]
     defense : ClassVar[int] = 0
     countdown : ClassVar[int] = 0
     exp_points : ClassVar[int] = 100
-    gold : ClassVar[int] = 100
+    gold : ClassVar[int] = 150
 
     def level(self,floor,difficulty):
         """ This function give the force and the health points of the boss, using the floor's level and the difficulty's level."""
 
-        self.droprate *= (((floor/10)+difficulty)+1)
+        self.droprate *= (floor/10) + difficulty + 1
         self.strength = round(self.strength * (((floor/10)+difficulty)+1))
         self.hp = round(self.hp * (((floor/10)+difficulty)+1))
         self.hp_max = self.hp
         self.points = round(self.points * (((floor/10)+difficulty)+1))
         self.exp_points *= floor/5
-        self.gold = round(self.gold * ((floor/10)+difficulty))
+        self.gold = round(self.gold * ((floor/10)+difficulty)+1)
         print(f"            {self.name} vient d'apparaître ! Un boss avec {self.hp} points de vie et avec une force de {self.strength}.")
         return self.points, self.droprate, self.strength, self.hp, self.exp_points
 
     def attack(self,player):
         """This function takes away health points from life's player when the Boss attacks him."""
         if self.countdown < 2 : 
-            if player.defense != 0 :
+
+            if player.defense_s != 0 :
+                self.weak_attack = round(self.strength / 2)
+                player.defense_s -= 1
+                player.hp -= self.weak_attack
+                print(f"Vous avez subi {self.weak_attack} points de dégâts de la part de l'ennemi")
+
+            elif player.defense != 0 :
                 self.weak_attack = round(self.strength / 1.5)
                 player.defense -= 1
                 player.hp -= self.weak_attack
-                print(f"Vous avez subi {self.weak_attack} points de dégâts de la part de l'ennemi")
+                print("Vous avez subi",colored(f"-{self.weak_attack}","red"), f"points de dégâts de la part de l'ennemi")
 
             else:    
                 player.hp -= self.strength
@@ -117,6 +126,7 @@ class Boss(Entity):
                 # Come back to the fight
             self.countdown += 1
             self.defense -= 1
+            player.mana += 1
 
         else:
             self.defense = self.defend()
@@ -127,7 +137,8 @@ class Boss(Entity):
     def death(self, player, score):
         """"This function will delete the last summoned monster and run the drop() method"""
         print(f"Félicitations ! Vous avez réussi à vaincre l'ennemi!")
-        if self.droprate >= randint(0,100):
+        number = randint(0,100)
+        if self.droprate >= number:
             print("L'ennemi a laissé tomber quelque chose")
             item = {"Excalibur" : 1, "une hâche": 49, "une épee": 30, "Potion": 20 } 
             dropped = Drop(item, player.strength, player.power, player.potion)
@@ -135,6 +146,7 @@ class Boss(Entity):
         score += self.points
         player.experience += self.exp_points
         player.gold += self.gold
+        time.sleep(1)
         clear()
         return score
     
@@ -146,15 +158,20 @@ class Boss(Entity):
         return self.defense
 
 @dataclass
-class Player(Entity):
-    
+class Player(Entity):   
     potion : ClassVar[int] = 3
-    defense : ClassVar[int] = 0
-    power : ClassVar[int] = 5
+    mana_potion : ClassVar[int] = 1
+    defense : ClassVar[int] = 0 # Damage reduction when equipped with a classical shield
+    power : ClassVar[int]
+    power_d : ClassVar[float] # Damage factor when using special attack
+    shield : ClassVar[int] # Number of turns with a shield during classical defense
+    defense_number : ClassVar[int] # Number of turns with a shield during special defense
     experience : ClassVar[int] = 0
     exp_dict : ClassVar[dict] = {1: 30, 2: 120, 3: 250, 4: 420, 5: 620, 6: 870, 7: 1160, 8: 1490, 9: 1860, 10: 2270}
     level : ClassVar[int] = 1
-    gold : ClassVar[int] = 0
+    gold : ClassVar[int] = 10
+    mana : ClassVar[int] = 6
+    defense_s : ClassVar[int] = 0 # Damage reduction when equipped with a special shield
         
     def attack(self,monster,score):
         """This function takes away health points from life's ennemy when the player attacks."""
@@ -184,26 +201,130 @@ class Player(Entity):
 
     def death(self):
         """This function allow to finish the game when the player is dead"""
+        print(colored("Votre ennemi vient malheureusement de vous porter un coup fatal ! \nVous gisez à terre en souffrant le martyre... \nEt dans un dernier râle d'agonie, vous succombez à vos blessures en vous demandant si ça valait vraiment la peine d'être venu...","red"))
         return False
     
     def defend(self):
         """This function give a shield to the player during 3 turns."""
-        if self.defense !=0 :
-            print("Tu as déjà un bouclier !")
-        else:
-            self.defense = 3
-            print("Te voilà équipé d'un bouclier pendant 3 tours !")
-        # Retour sur combat
+        self.defense = self.shield
+        print("Te voilà équipé d'un bouclier pendant 3 tours !")
         return self.defense
             
-    def drink_potion(self):
-        """This function gives back 20 HP to the player in battle."""
-        if self.hp < self.hp_max -20:
-            self.hp += 20
+    def drink_hp_potion(self):
+        """This function gives back 30 HP to the player in battle."""
+        if self.hp < self.hp_max -30:
+            self.hp += 30
         else:
             self.hp = self.hp_max
         self.potion -= 1
-        print(f'-------Vous avez maintenant {self.potion} potions et {self.hp}PV')
+        print(f'-------Vous avez maintenant {self.potion} potions de vie et {self.hp} PV')
         # Retour sur combat
         return self.hp, self.potion
-               
+
+    def drink_mana_potion(self):
+        """This function gives 6 manas to the player in battle."""
+        self.mana += 6
+        self.mana_potion -= 1
+        print(f'-------Vous avez maintenant {self.mana_potion} potions de mana et {self.mana} manas')
+        # Retour sur combat
+        return self.mana, self.mana_potion
+
+    def defend_special(self):
+        """Generates a better shield but need mana to use"""
+        if self.defense !=0 or self.defense_s !=0:
+                print("Tu as déjà un bouclier !")
+        else:
+            self.defense_s = self.defense_number
+            print(f"Te voilà équipé d'un bouclier pendant {self.defense_s} tours !")
+            self.mana -= 8
+            # Retour sur combat
+        return self.defense_s 
+
+    def attack_special(self, monster, score):
+        """Generates a stronger attack but need mana to use"""
+        if monster.hp <= round(self.power * self.power_d):
+                score = monster.death(self, score)
+                monster.hp = 0
+        else:
+            if monster.defense <= 0:
+                monster.hp -= round(self.power * self.power_d)
+            else:
+                monster.hp -= round(self.power/1.5)
+        self.mana -= 8
+        clear()
+        print("L'ennemi a subi",colored(f"-{round(self.power * self.power_d)}", "blue")," points de dégats")
+        # Retour sur combat
+        return score, monster.hp, self.mana
+
+    def buy(self):
+        """Create a shop and allow the player to buy some stuffs with gold"""
+        print("Potion_HP(50gold) : 1 | Potion_mana(100gold) : 2 | Exit : 3")
+        print(f"Vous avez {self.gold} gold")
+        buying = True
+        while buying:
+            item = input("Que voulez-vous acheter?  ")
+            if item == "1":
+                number = input("Combien en voulez-vous?   ")
+                try:
+                    if self.gold >= int(number) * 50 and int(number) >= 0:
+                        self.potion += int(number)
+                        self.gold -= int(number) * 50
+                        print(f"{self.gold}")
+                        print(f"Vous avez maintenant {self.potion} potions")
+                    else :
+                        print("Vous n'avez pas assez de monnaie")
+                except:
+                    print("Veuillez indiquer un nombre correct")
+            elif item == "2":
+                number = input("Combien en voulez-vous?   ")
+                try:
+                    if self.gold >= int(number) * 100 and int(number) >= 0:
+                        self.mana_potion += int(number)
+                        self.gold -= int(number) * 100
+                        print(f"{self.gold}")
+                        print(f"Vous avez maintenant {self.mana_potion} potions de mana")
+                    else :
+                        print("Vous n'avez pas assez de monnaie")
+                except:
+                    print("Veuillez indiquer un nombre correct")
+            elif item == "3":
+                buying = False
+@dataclass
+class Wizard(Player):
+
+    character : ClassVar[str] = "Wizard"
+    power : ClassVar[int] = 4
+    shield : ClassVar[int] = 3
+    defense_number : ClassVar[int] = 3
+    power_d : ClassVar[float] = 2.5
+    classic_attack : ClassVar[str] = "Sort de base"
+    special_attack : ClassVar[str] = "Fléau démoniaque"
+    classic_defense : ClassVar[str] = "Aura protectrice"
+    special_defense : ClassVar[str] = "Incantation divine"
+
+@dataclass
+class Paladin(Player):
+
+    character : ClassVar[str] = "Paladin"
+    power : ClassVar[int] = 5
+    shield : ClassVar[int] = 2
+    defense_number : ClassVar[int] = 4
+    power_d : ClassVar[float] = 2
+    classic_attack : ClassVar[str] = "Attaque classique"
+    special_attack : ClassVar[str] = "One Punch Paladin"
+    classic_defense : ClassVar[str] = "Protection normale"
+    special_defense : ClassVar[str] = "Defense ultime"
+
+@dataclass
+class Knight(Player):
+
+    character : ClassVar[str] = "Knight"
+    power : ClassVar[int] = 6
+    shield : ClassVar[int] = 3
+    defense_number : ClassVar[int] = 3
+    power_d : ClassVar[float] = 1.5
+    classic_attack : ClassVar[str] = "Sauvagerie modérée"
+    special_attack : ClassVar[str] = "Berserk Knight"
+    classic_defense : ClassVar[str] = "Ecu de bois"
+    special_defense : ClassVar[str] =  "Bouclier titanesque"
+

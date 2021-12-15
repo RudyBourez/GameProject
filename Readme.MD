@@ -1,3 +1,5 @@
+Pour lancer le jeu, installer les éléments de requirements.txt puis éxécuter le fichier main.py
+
 # Fonctionnalités de Base du jeu
 
 * Un joueur avec des attributs et un inventaire
@@ -9,16 +11,15 @@
 
 # Améliorations
 
-* Création de différentes classes de personnages (Magicien, Paladin, Guerrier)
-* Gestion de Magic Points (MP)
-* boutique
-* D'autres potions
 * Ajouter du Lore (histoire)
+* Bruitages
 
 # Améliorations réalisées
 
+* Création de différentes classes de personnages (Wizard, Paladin, Warrior)
 * Amélioration graphique
 * Level up (gain de points d'expérience)
-* Son
 * Ajout d'un système de pièces d'or 
-* Sauvegarde
+* Sauvegarde / chargement
+* D'autres potions
+* Boutique
